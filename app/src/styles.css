@@ -11,6 +11,11 @@ body {
   background-color: #f3f4f6;
 }
 
+/* ensure full-height mounting so flex layout fills viewport */
+html, body, #app {
+  height: 100%;
+}
+
 .font-oswald { font-family: 'Oswald', sans-serif; }
 .font-inter { font-family: 'Inter', sans-serif; }
 

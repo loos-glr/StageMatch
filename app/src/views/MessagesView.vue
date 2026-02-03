@@ -12,7 +12,7 @@
         </div>
       </div>
 
-      <div class="px-5 pb-20">
+      <div class="px-5 pb-4">
         <h3 class="font-oswald font-bold text-lg mb-3 uppercase">Chats</h3>
         <div class="flex flex-col gap-4">
           <div v-for="chat in chats" :key="chat.id" class="flex items-center p-3 bg-white rounded-lg shadow-sm active:bg-gray-50 transition-colors cursor-pointer">

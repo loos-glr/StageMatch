@@ -1,11 +1,11 @@
 <template>
-  <div class="h-[calc(100%-80px)] w-full overflow-hidden">
-    <div class="flex flex-col h-full bg-[#F4F4F4]">
+  <div class="h-full w-full bg-[#F4F4F4] flex flex-col">
       <HeaderComp />
 
-      <div class="flex-1 px-4 py-2 relative">
+      <main id="main" class="flex-1 w-full mx-auto px-3 py-2 relative flex flex-col overflow-hidden">
         <div
           v-if="isLoading"
+          id="loader"
           class="w-full h-full flex items-center justify-center flex-col"
         >
           <self-building-square-spinner
@@ -14,21 +14,23 @@
             color="#8fe507"
           />
         </div>
-        <div v-else-if="currentStage" class="w-full h-full relative">
-          <div class="relative w-full h-full">
+        
+        <div v-else-if="currentStage" id="card-stack" class="w-full flex-1 relative min-h-0">
+          <div id="card-stack-inner" class="relative w-full h-full min-h-0 pb-14 md:pb-18 mx-auto max-w-[640px]">
             <template
               v-for="(stage, stackIndex) in displayStack"
               :key="stage.id"
             >
               <div
                 v-if="stackIndex === 0"
+                id="top-card"
                 class="absolute inset-0 z-30 rounded-3xl overflow-hidden shadow-xl bg-white border border-gray-200 flex flex-col"
                 :style="stackCardStyle(stackIndex)"
                 @touchstart.passive="onTouchStart"
                 @touchmove.passive="onTouchMove"
                 @touchend.passive="onTouchEnd"
               >
-                <div class="h-[65%] w-full relative bg-gray-300">
+                <div id="card-image" class="h-[70%] md:h-[55%] w-full relative bg-gray-300">
                   <img :src="stage.image" class="w-full h-full object-cover" />
                   <div
                     class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"
@@ -36,29 +38,29 @@
                 </div>
 
                 <div
-                  class="flex-1 p-5 flex flex-col justify-center bg-white relative -mt-4 rounded-t-3xl z-10"
+                  id="card-content"
+                  class="flex-none h-[20%] md:h-[30%] p-3 flex flex-col justify-start bg-white relative -mt-4 z-10 overflow-hidden"
+                  style="min-height:90px"
                 >
-                  <h2 class="font-oswald font-bold text-3xl mb-1 text-black">
+                  <h2 class="font-oswald font-bold text-xl md:text-2xl mb-1 text-black">
                     {{ stage.company }}
                   </h2>
                   <p
-                    class="font-inter font-semibold text-gray-500 text-lg mb-4"
+                    class="font-inter font-semibold text-gray-500 text-sm md:text-base mb-3"
                   >
                     {{ stage.title }}
                   </p>
 
-                  <div class="flex flex-wrap gap-2">
+                  <div id="tags" class="flex flex-wrap gap-2">
                     <span
                       v-for="(tag, index) in stage.tags"
                       :key="index"
-                      class="px-4 py-1 bg-gray-200 rounded-full font-inter text-sm font-medium text-gray-800"
+                      class="px-3 py-0.5 bg-gray-200 rounded-full font-inter text-xs font-medium text-gray-800"
                       >{{ tag }}</span
                     >
                   </div>
 
-                  <div
-                    class="mt-4 flex items-center text-gray-500 font-inter text-sm"
-                  >
+                  <div id="location" class="mt-4 flex items-center text-gray-500 font-inter text-sm">
                     <svg
                       class="mr-1"
                       xmlns="http://www.w3.org/2000/svg"
@@ -80,9 +82,25 @@
                   </div>
                 </div>
 
+                <!-- Card action buttons (moved into card to save vertical space) -->
+                <div id="card-actions" class="mt-4 flex items-center justify-between gap-3 px-4">
+                  <button id="btn-dislike-card" class="flex-1 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center text-black shadow-sm" @mousedown.prevent="startHold('left')" @mouseup="stopHold" @mouseleave="stopHold" @touchstart.prevent="startHold('left')" @touchend="stopHold" @touchcancel="stopHold" @click="nextStage">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg>
+                  </button>
+
+                  <button id="btn-center-card" class="w-10 h-10 rounded-full bg-black flex items-center justify-center text-white shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>
+                  </button>
+
+                  <button id="btn-like-card" class="flex-1 h-10 rounded-full bg-black flex items-center justify-center text-lime shadow-sm" @mousedown.prevent="startHold('right')" @mouseup="stopHold" @mouseleave="stopHold" @touchstart.prevent="startHold('right')" @touchend="stopHold" @touchcancel="stopHold" @click="nextStage">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+                  </button>
+                </div>
+
                 <!-- Top card overlay indicators -->
                 <div class="absolute inset-0 pointer-events-none z-40">
                   <div
+                    id="overlay-nope"
                     v-if="swipeDelta < 0"
                     class="absolute left-6 top-1/2 -translate-y-1/2 flex items-center gap-3 px-6 py-4 rounded-lg bg-red-600/95 text-white font-extrabold text-3xl shadow-2xl border-4 border-white"
                     :style="{
@@ -104,6 +122,7 @@
                     NOPE
                   </div>
                   <div
+                    id="overlay-like"
                     v-if="swipeDelta > 0"
                     class="absolute right-6 top-1/2 -translate-y-1/2 flex items-center gap-3 px-6 py-4 rounded-lg bg-emerald-600/95 text-white font-extrabold text-3xl shadow-2xl border-4 border-white"
                     :style="{
@@ -131,23 +150,36 @@
                 class="absolute inset-0 z-20 rounded-3xl overflow-hidden bg-white border border-gray-200"
                 :style="stackCardStyle(stackIndex)"
               >
-                <div class="h-[65%] w-full relative bg-gray-300">
+                <div class="h-[50%] md:h-[60%] w-full relative bg-gray-300">
                   <img :src="stage.image" class="w-full h-full object-cover" />
                   <div
                     class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"
                   ></div>
                 </div>
                 <div
-                  class="flex-1 p-5 flex flex-col justify-center bg-white relative -mt-4 rounded-t-3xl z-10"
+                  class="flex-none h-[28%] md:h-[30%] p-3 flex flex-col justify-start bg-white relative -mt-4 rounded-t-3xl z-10 overflow-hidden"
+                  style="min-height:90px"
                 >
-                  <h2 class="font-oswald font-bold text-3xl mb-1 text-black">
+                  <h2 class="font-oswald font-bold text-2xl md:text-3xl mb-1 text-black">
                     {{ stage.company }}
                   </h2>
                   <p
-                    class="font-inter font-semibold text-gray-500 text-lg mb-4"
+                    class="font-inter font-semibold text-gray-500 text-base md:text-lg mb-4"
                   >
                     {{ stage.title }}
                   </p>
+
+                  <div id="card-actions" class="mt-3 flex items-center justify-between gap-3 px-2">
+                    <button id="btn-dislike-card-2" class="flex-1 h-9 rounded-full bg-white border border-gray-200 flex items-center justify-center text-black shadow-sm" @mousedown.prevent="startHold('left')" @mouseup="stopHold" @mouseleave="stopHold" @touchstart.prevent="startHold('left')" @touchend="stopHold" @touchcancel="stopHold" @click="nextStage">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg>
+                    </button>
+                    <button id="btn-center-card-2" class="w-9 h-9 rounded-full bg-black flex items-center justify-center text-white shadow-sm">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>
+                    </button>
+                    <button id="btn-like-card-2" class="flex-1 h-9 rounded-full bg-black flex items-center justify-center text-lime shadow-sm" @mousedown.prevent="startHold('right')" @mouseup="stopHold" @mouseleave="stopHold" @touchstart.prevent="startHold('right')" @touchend="stopHold" @touchcancel="stopHold" @click="nextStage">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+                    </button>
+                  </div>
                 </div>
               </div>
             </template>
@@ -162,86 +194,10 @@
             <p class="text-gray-500">Er zijn geen nieuwe stages meer.</p>
           </div>
         </div>
-      </div>
+      </main>
 
-      <div class="h-24 px-8 flex items-center justify-between pb-4">
-        <button
-          @click="nextStage"
-          @mousedown.prevent="startHold('left')"
-          @mouseup="stopHold"
-          @mouseleave="stopHold"
-          @touchstart.prevent="startHold('left')"
-          @touchend="stopHold"
-          @touchcancel="stopHold"
-          class="w-16 h-16 rounded-full bg-white border-2 border-gray-200 flex items-center justify-center text-black shadow-lg hover:scale-110 transition-transform"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="30"
-            height="30"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <path d="M17 14V2" />
-            <path
-              d="M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H19a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.76a2 2 0 0 0-1.79 1.11L12 22h0a3.13 3.13 0 0 1-3-3.88Z"
-            />
-          </svg>
-        </button>
+      
 
-        <button
-          class="w-12 h-12 rounded-full bg-black flex items-center justify-center text-white shadow-lg hover:scale-110 transition-transform"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <circle cx="12" cy="12" r="10" />
-            <path d="M12 16v-4" />
-            <path d="M12 8h.01" />
-          </svg>
-        </button>
-
-        <button
-          @click="nextStage"
-          @mousedown.prevent="startHold('right')"
-          @mouseup="stopHold"
-          @mouseleave="stopHold"
-          @touchstart.prevent="startHold('right')"
-          @touchend="stopHold"
-          @touchcancel="stopHold"
-          class="w-16 h-16 rounded-full bg-black flex items-center justify-center text-lime shadow-lg hover:scale-110 transition-transform"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="30"
-            height="30"
-            viewBox="0 0 24 24"
-            fill="#8fe507"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <path d="M7 10v12" />
-            <path
-              d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2h0a3.13 3.13 0 0 1 3 3.88Z"
-            />
-          </svg>
-        </button>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -344,9 +300,9 @@ export default {
     stackCardStyle() {
       return (stackIndex) => {
         if (stackIndex === 0) return this.cardStyle;
-        // base offset + scale for depth
-        const translateY = stackIndex * 12;
-        const scale = 1 - stackIndex * 0.04;
+        // base offset + scale for depth (smaller offsets to shrink deck)
+        const translateY = stackIndex * 8;
+        const scale = 1 - stackIndex * 0.03;
         // if releaseActive, bring the next card forward
         if (this.releaseActive && stackIndex === 1) {
           return {

@@ -1,5 +1,5 @@
 <template>
-  <div class="px-5 py-3 flex justify-between items-center bg-[#F4F4F4]">
+  <div id="header" class="px-5 py-3 flex justify-between items-center bg-[#F4F4F4]" role="banner">
         <div class="flex items-center gap-3">
           <img
             src="/logo-stagematch.png"
