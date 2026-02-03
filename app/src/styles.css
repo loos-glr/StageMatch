@@ -3,11 +3,8 @@
 :root {
   --glr-lime: #8fe507;
   --glr-black: #000000;
+  --glr-white: #ffffff;
 }
-
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
 
 body {
   font-family: 'Inter', sans-serif;
