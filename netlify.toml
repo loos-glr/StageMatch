@@ -5,7 +5,7 @@
   # run build from the `app` subdirectory
   base = "app"
   # publish the built output (explicit path from repo root)
-  publish = "app/dist"
+  publish = "dist"
   command = "npm run build"
 
 [build.environment]
