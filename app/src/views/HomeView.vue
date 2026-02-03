@@ -88,7 +88,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"/></svg>
                   </button>
 
-                  <button id="btn-center-card" class="w-10 h-10 rounded-full bg-black flex items-center justify-center text-white shadow-sm">
+                  <button id="btn-center-card" class="w-10 h-10 rounded-full bg-black flex items-center justify-center text-white shadow-sm" @click.stop="openDetail">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
                   </button>
 
@@ -173,7 +173,7 @@
                     <button id="btn-dislike-card-2" class="flex-1 h-9 rounded-full bg-red-500 border border-transparent flex items-center justify-center text-white shadow-sm" @mousedown.prevent="startHold('left')" @mouseup="stopHold" @mouseleave="stopHold" @touchstart.prevent="startHold('left')" @touchend="stopHold" @touchcancel="stopHold" @click="nextStage">
                       <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"/></svg>
                     </button>
-                    <button id="btn-center-card-2" class="w-9 h-9 rounded-full bg-black flex items-center justify-center text-white shadow-sm">
+                    <button id="btn-center-card-2" class="w-9 h-9 rounded-full bg-black flex items-center justify-center text-white shadow-sm" @click.stop="">
                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
                     </button>
                     <button id="btn-like-card-2" class="flex-1 h-9 rounded-full bg-green-500 flex items-center justify-center text-white shadow-sm" @mousedown.prevent="startHold('right')" @mouseup="stopHold" @mouseleave="stopHold" @touchstart.prevent="startHold('right')" @touchend="stopHold" @touchcancel="stopHold" @click="nextStage">
@@ -196,7 +196,66 @@
         </div>
       </main>
 
-      
+      <!-- Detail Overlay -->
+      <transition name="slide-up">
+        <div v-if="isDetailOpen" class="fixed inset-0 z-50 bg-white flex flex-col overflow-y-auto">
+           <!-- Close Button -->
+           <button @click="closeDetail" class="absolute top-4 right-4 z-20 w-10 h-10 bg-white/80 backdrop-blur rounded-full flex items-center justify-center shadow-md">
+             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+           </button>
+
+           <!-- Image Carousel -->
+           <div class="w-full h-[45%] flex-none relative bg-gray-200">
+             <div class="flex overflow-x-auto snap-x snap-mandatory w-full h-full scrollbar-hide">
+               <div v-for="(img, idx) in (detailStage.images || [detailStage.image])" :key="idx" class="snap-center w-full h-full flex-none">
+                 <img :src="img" class="w-full h-full object-cover" />
+               </div>
+             </div>
+             <!-- Carousel Indicator Dots (simple) -->
+             <div class="absolute bottom-4 left-0 right-0 flex justify-center gap-2">
+                <div v-for="(_, idx) in (detailStage.images || [detailStage.image])" :key="idx" class="w-2 h-2 rounded-full bg-white shadow-sm opacity-80"></div>
+             </div>
+           </div>
+
+           <!-- Content -->
+           <div class="flex-1 p-6 pb-24">
+             <div class="flex items-start justify-between mb-2">
+               <div>
+                  <h2 class="font-oswald font-bold text-3xl text-black mb-1">{{ detailStage.company }}</h2>
+                  <h3 class="font-inter font-semibold text-xl text-gray-500">{{ detailStage.title }}</h3>
+               </div>
+             </div>
+
+             <div class="flex items-center text-gray-500 mb-6 font-medium">
+                <svg class="mr-2" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                {{ detailStage.location }}
+             </div>
+
+             <div class="flex flex-wrap gap-2 mb-6">
+                <span v-for="tag in detailStage.tags" :key="tag" class="px-3 py-1 bg-gray-100 rounded-full text-sm font-semibold text-gray-700">
+                  {{ tag }}
+                </span>
+             </div>
+
+             <div class="prose prose-sm">
+               <h4 class="font-oswald font-bold text-lg mb-2">Over dit bedrijf</h4>
+               <p class="text-gray-600 leading-relaxed">
+                 {{ detailStage.description || "Geen beschrijving beschikbaar." }}
+               </p>
+             </div>
+           </div>
+
+           <!-- Static footer actions in detail view -->
+           <div class="fixed bottom-0 left-0 right-0 p-4 bg-white/95 backdrop-blur border-t border-gray-100 flex justify-center gap-6 shadow-[0_-5px_15px_rgba(0,0,0,0.05)]">
+               <button @click="closeDetail(); stopHold(); nextStage()" class="w-14 h-14 rounded-full bg-red-500 flex items-center justify-center text-white shadow-lg transform transition active:scale-95">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"/></svg>
+               </button>
+               <button @click="closeDetail(); stopHold(); nextStage()" class="w-14 h-14 rounded-full bg-green-500 flex items-center justify-center text-white shadow-lg transform transition active:scale-95">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
+               </button>
+           </div>
+        </div>
+      </transition>
 
   </div>
 </template>
@@ -223,6 +282,7 @@ export default {
       releaseActive: false,
       releaseTargetX: 0,
       releaseRotate: 0,
+      isDetailOpen: false,
       stages: [
         {
           id: 1,
@@ -231,7 +291,13 @@ export default {
           location: "Rotterdam",
           image:
             "https://images.unsplash.com/photo-1497215728101-856f4ea42174?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+          images: [
+            "https://images.unsplash.com/photo-1497215728101-856f4ea42174?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+          ],
           tags: ["Adobe CC", "Branding", "MBO4"],
+          description: "Studio Dumbar is een internationaal gerenommeerd ontwerpbureau. Wij zijn op zoek naar een gedreven stagiair die wil leren werken aan grote identiteiten en branding projecten. Je draait volledig mee in ons team.",
         },
         {
           id: 2,
@@ -240,7 +306,13 @@ export default {
           location: "Rotterdam",
           image:
             "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+          images: [
+            "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1497215728101-856f4ea42174?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+          ],
           tags: ["Figma", "Research", "Agile"],
+          description: "Alles voor een glimlach. Als UX/UI stagiair bij Coolblue werk je aan de verbetering van onze website en app. Je doet gebruikersonderzoek, maakt flows en ontwerpt pixel-perfect interfaces.",
         },
         {
           id: 3,
@@ -249,7 +321,13 @@ export default {
           location: "Amsterdam",
           image:
             "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+          images: [
+            "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1497215728101-856f4ea42174?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+          ],
           tags: ["React", "CSS", "Creative"],
+          description: "Dept is een digital agency die creativiteit, technologie en data combineert. Als frontend stagiair bouw je mee aan vette websites en campagnes voor grote merken.",
         },
       ],
     };
@@ -271,6 +349,9 @@ export default {
         out.push(this.stages[(this.currentIndex + i) % this.stages.length]);
       }
       return out;
+    },
+    detailStage() {
+      return this.currentStage;
     },
     swipeDelta() {
       return this.isSwiping ? this.touchCurrentX - this.touchStartX : 0;
@@ -352,6 +433,14 @@ export default {
       }
       if (this.isSwiping) this.onTouchEnd();
       this.holdDirection = null;
+    },
+
+    openDetail() {
+      this.isDetailOpen = true;
+    },
+
+    closeDetail() {
+      this.isDetailOpen = false;
     },
 
     onTouchStart(e) {
