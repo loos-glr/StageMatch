@@ -6,6 +6,10 @@
   --glr-white: #ffffff;
 }
 
+.bg-lime {
+  background-color: var(--glr-lime);
+}
+
 body {
   font-family: 'Inter', sans-serif;
   background-color: #f3f4f6;

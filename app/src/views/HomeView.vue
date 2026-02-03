@@ -92,7 +92,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
                   </button>
 
-                  <button id="btn-like-card" class="flex-1 h-10 rounded-full bg-green-500 flex items-center justify-center text-white shadow-sm" @mousedown.prevent="startHold('right')" @mouseup="stopHold" @mouseleave="stopHold" @touchstart.prevent="startHold('right')" @touchend="stopHold" @touchcancel="stopHold" @click="nextStage">
+                  <button id="btn-like-card" class="flex-1 h-10 rounded-full bg-green-500 flex items-center justify-center text-white shadow-sm" @mousedown.prevent="startHold('right')" @mouseup="stopHold" @mouseleave="stopHold" @touchstart.prevent="startHold('right')" @touchend="stopHold" @touchcancel="stopHold" @click="handleLikeClick">
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
                   </button>
                 </div>
@@ -176,7 +176,7 @@
                     <button id="btn-center-card-2" class="w-9 h-9 rounded-full bg-black flex items-center justify-center text-white shadow-sm" @click.stop="">
                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
                     </button>
-                    <button id="btn-like-card-2" class="flex-1 h-9 rounded-full bg-green-500 flex items-center justify-center text-white shadow-sm" @mousedown.prevent="startHold('right')" @mouseup="stopHold" @mouseleave="stopHold" @touchstart.prevent="startHold('right')" @touchend="stopHold" @touchcancel="stopHold" @click="nextStage">
+                    <button id="btn-like-card-2" class="flex-1 h-9 rounded-full bg-green-500 flex items-center justify-center text-white shadow-sm" @mousedown.prevent="startHold('right')" @mouseup="stopHold" @mouseleave="stopHold" @touchstart.prevent="startHold('right')" @touchend="stopHold" @touchcancel="stopHold" @click="handleLikeClick">
                       <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
                     </button>
                   </div>
@@ -257,12 +257,40 @@
         </div>
       </transition>
 
+      <!-- Match Overlay -->
+      <transition name="fade">
+        <div v-if="isMatchAnimVisible" class="fixed inset-0 z-[60] bg-black/90 flex flex-col items-center justify-center p-6 text-center">
+           <h1 class="font-oswald font-bold text-5xl text-white mb-8 italic tracking-wider animate-bounce-in">IT'S A MATCH!</h1>
+           <p class="text-white/80 font-inter mb-8 text-lg">Je hebt een match met {{ matchedCompany?.company }}</p>
+
+           <div class="flex items-center justify-center gap-4 mb-12 relative w-full h-40">
+               <div class="w-32 h-32 rounded-full border-4 border-white overflow-hidden shadow-2xl relative z-10 animate-slide-in-left">
+                  <img :src="userImage" class="w-full h-full object-cover">
+               </div>
+               <div class="w-32 h-32 rounded-full border-4 border-white overflow-hidden shadow-2xl relative z-10 animate-slide-in-right">
+                  <img :src="matchedCompany?.image" class="w-full h-full object-cover">
+               </div>
+           </div>
+
+           <button @click="closeMatch" class="w-full max-w-xs bg-lime text-black font-oswald font-bold text-xl py-4 rounded-full mb-4 shadow-lg hover:brightness-110 transition transform hover:scale-105">
+              STUUR EEN BERICHT
+           </button>
+
+           <button @click="closeMatch" class="w-full max-w-xs border-2 border-white text-white font-oswald font-bold text-xl py-3 rounded-full hover:bg-white/10 transition">
+              VERDER ZOEKEN
+           </button>
+        </div>
+      </transition>
+
   </div>
 </template>
 
 <script>
 import { SelfBuildingSquareSpinner } from "epic-spinners";
 import HeaderComp from '../components/HeaderComp.vue'
+import logoDumbar from '../../assets/images/logo-studio-dumbar.jpg'
+import logoCoolblue from '../../assets/images/logo-coolblue.jpg'
+import logoDept from '../../assets/images/logo-dept.jpg'
 
 export default {
   components: { 
@@ -283,15 +311,18 @@ export default {
       releaseTargetX: 0,
       releaseRotate: 0,
       isDetailOpen: false,
+      isMatchAnimVisible: false,
+      matchedCompany: null,
+      userImage: "https://images.unsplash.com/photo-1599566150163-29194dcaad36?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
       stages: [
         {
           id: 1,
           company: "Studio Dumbar",
           title: "Visual Design Stagiair",
           location: "Rotterdam",
-          image:
-            "https://images.unsplash.com/photo-1497215728101-856f4ea42174?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+          image: logoDumbar,
           images: [
+            logoDumbar,
             "https://images.unsplash.com/photo-1497215728101-856f4ea42174?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
             "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
             "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
@@ -302,11 +333,12 @@ export default {
         {
           id: 2,
           company: "Coolblue",
+          likedBack: true,
           title: "UX/UI Designer",
           location: "Rotterdam",
-          image:
-            "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+          image: logoCoolblue,
           images: [
+            logoCoolblue,
             "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
             "https://images.unsplash.com/photo-1497215728101-856f4ea42174?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
             "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
@@ -319,9 +351,9 @@ export default {
           company: "Dept Agency",
           title: "Frontend Developer",
           location: "Amsterdam",
-          image:
-            "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+          image: logoDept,
           images: [
+            logoDept,
             "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
             "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
             "https://images.unsplash.com/photo-1497215728101-856f4ea42174?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
@@ -443,6 +475,36 @@ export default {
       this.isDetailOpen = false;
     },
 
+    closeMatch() {
+      this.isMatchAnimVisible = false;
+      this.matchedCompany = null;
+    },
+
+    checkForMatch(stage) {
+      if (stage && stage.likedBack) {
+        this.matchedCompany = stage;
+        this.isMatchAnimVisible = true;
+        return true;
+      }
+      return false;
+    },
+
+    handleLikeClick() {
+      if (this.releaseActive) return;
+      
+      this.releaseActive = true;
+      this.releaseTargetX = window.innerWidth || 800;
+      this.releaseRotate = 20;
+
+      const stage = this.currentStage;
+      this.checkForMatch(stage);
+      
+      setTimeout(() => {
+        this.nextStage();
+        this.releaseActive = false;
+      }, 300);
+    },
+
     onTouchStart(e) {
       const t = e.touches && e.touches[0];
       if (!t) return;
@@ -479,6 +541,10 @@ export default {
         this.releaseActive = true;
         this.releaseTargetX = window.innerWidth || 800;
         this.releaseRotate = 20;
+
+        const stage = this.currentStage;
+        this.checkForMatch(stage);
+
         setTimeout(() => {
           this.nextStage();
           this.releaseActive = false;
@@ -497,3 +563,38 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+@keyframes bounceIn {
+  0% { transform: scale(0.3); opacity: 0; }
+  50% { transform: scale(1.05); opacity: 1; }
+  70% { transform: scale(0.9); }
+  100% { transform: scale(1); }
+}
+.animate-bounce-in {
+  animation: bounceIn 0.8s cubic-bezier(0.215, 0.610, 0.355, 1.000) both;
+}
+
+@keyframes slideInLeft {
+  0% { transform: translateX(-100px); opacity: 0; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+.animate-slide-in-left {
+  animation: slideInLeft 0.6s ease-out 0.2s both;
+}
+
+@keyframes slideInRight {
+  0% { transform: translateX(100px); opacity: 0; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+.animate-slide-in-right {
+  animation: slideInRight 0.6s ease-out 0.2s both;
+}
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.3s;
+}
+.fade-enter-from, .fade-leave-to {
+  opacity: 0;
+}
+</style>
