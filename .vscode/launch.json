@@ -1,0 +1,21 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Launch Chrome (Vite)",
+      "type": "pwa-chrome",
+      "request": "launch",
+      "url": "http://localhost:5173/",
+      "webRoot": "${workspaceFolder}/app",
+      "preLaunchTask": "npm: dev (app)",
+      "userDataDir": "${workspaceFolder}/.vscode/vscode-chrome",
+      "runtimeArgs": ["--new-window"]
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Run Vite and Open Browser",
+      "configurations": ["Launch Chrome (Vite)"]
+    }
+  ]
+}

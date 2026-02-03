@@ -1,0 +1,42 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "npm: dev (app)",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "dev"],
+      "options": {
+        "cwd": "${workspaceFolder}/app"
+      },
+      "isBackground": true,
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": {
+        "owner": "vite",
+        "pattern": [
+          {
+            "regexp": "^(.+?):(\\d+):(\\d+):\\s*(?:error|ERROR)\\s*[:-]?\\s*(.*)$",
+            "file": 1,
+            "line": 2,
+            "column": 3,
+            "message": 4,
+            "severity": "error"
+          },
+          {
+            "regexp": "^\\s*(?:error|ERROR)\\s*[:-]?\\s*(.*)$",
+            "message": 1,
+            "severity": "error"
+          }
+        ],
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "^",
+          "endsPattern": "ready in [0-9]+ ms"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+:root {
+  --glr-lime: #8fe507;
+  --glr-black: #000000;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #f3f4f6;
+}
+
+.font-oswald { font-family: 'Oswald', sans-serif; }
+.font-inter { font-family: 'Inter', sans-serif; }
+
+/* Verberg scrollbar maar behoud functionaliteit */
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Minor app helpers */
+.text-lime { color: var(--glr-lime); }
