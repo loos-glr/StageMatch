@@ -1,0 +1,28 @@
+# Node
+node_modules/
+**/node_modules/
+
+# Vite cache / build
+.vite/
+dist/
+
+# OS
+.DS_Store
+
+# Env
+.env
+.env.*.local
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# VSCode user data (keep workspace settings and tasks/launch, but ignore browser profile)
+.vscode/vscode-chrome/
+
+# Misc
+.idea/
+.cache/
+coverage/
