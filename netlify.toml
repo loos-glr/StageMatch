@@ -2,15 +2,16 @@
 ## Builds from the `app` subdirectory (Vite + Vue) and serves SPA index.html
 
 [build]
+  # run build from the `app` subdirectory
   base = "app"
-  publish = "dist"
+  # publish the built output (explicit path from repo root)
+  publish = "app/dist"
   command = "npm run build"
 
 [build.environment]
-  NODE_VERSION = "25"
+  NODE_VERSION = "18"
 
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
-  force = true
