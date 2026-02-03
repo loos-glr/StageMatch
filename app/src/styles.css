@@ -1,7 +1,13 @@
+@import "tailwindcss";
+
 :root {
   --glr-lime: #8fe507;
   --glr-black: #000000;
 }
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 body {
   font-family: 'Inter', sans-serif;
@@ -15,5 +21,3 @@ body {
 .scrollbar-hide::-webkit-scrollbar { display: none; }
 .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
 
-/* Minor app helpers */
-.text-lime { color: var(--glr-lime); }
