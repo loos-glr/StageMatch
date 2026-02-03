@@ -2,9 +2,9 @@
   <div class="flex flex-col h-full bg-[#F4F4F4] overflow-y-auto pb-4">
     <div class="px-5 py-4 bg-[#F4F4F4] flex justify-between items-center sticky top-0 z-10 border-b border-gray-200">
       <h1 class="font-oswald font-bold text-2xl uppercase tracking-wide text-black">MIJN PROFIEL</h1>
-      <div class="text-black transform rotate-90">
-        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21 21-6-6m6 6v-4.8m0 4.8h-4.8"/><path d="M3 16.2V21m0 0h4.8M3 21l6-6"/><path d="M21 7.8V3m0 0h-4.8M21 3l-6 6"/><path d="M3 7.8V3m0 0h4.8M3 3l6 6"/></svg>
-      </div>
+      <button class="text-black">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+      </button>
     </div>
 
     <div class="px-5 flex flex-col items-center mt-4">
